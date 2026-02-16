@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend calendar.event form -->
+    <record id="view_calendar_event_form_inherit" model="ir.ui.view">
+        <field name="name">calendar.event.form.inherit</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <field name="microsoft_id" invisible="1"/>
+                    <button name="action_view_sync_history" type="object"
+                            string="Historique sync" class="btn-secondary"
+                            invisible="not microsoft_id"/>
+                    <button name="action_force_resync" type="object"
+                            string="Forcer resync" class="btn-warning"
+                            invisible="not microsoft_id"/>
+                    <field name="sync_analysis_state" widget="statusbar"
+                           statusbar_visible="ok,stuck,extreme_future"/>
+                </header>
+            </xpath>
+            <xpath expr="//field[@name='recurrency']" position="after">
+                <field name="need_sync_m" readonly="1"/>
+                <field name="sync_stuck_days" invisible="sync_stuck_days == 0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- List view for need_sync analysis -->
+    <record id="view_calendar_event_need_sync_list" model="ir.ui.view">
+        <field name="name">calendar.event.need.sync.list</field>
+        <field name="model">calendar.event</field>
+        <field name="arch" type="xml">
+            <list string="Événements à synchroniser" decoration-danger="sync_stuck_days &gt; 7">
+                <field name="name"/>
+                <field name="start"/>
+                <field name="user_id"/>
+                <field name="need_sync_m"/>
+                <field name="sync_stuck_days"/>
+                <field name="sync_analysis_state"/>
+                <field name="microsoft_id"/>
+                <field name="write_date"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action for need_sync events -->
+    <record id="action_calendar_event_need_sync" model="ir.actions.act_window">
+        <field name="name">Événements à synchroniser</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_calendar_event_need_sync_list"/>
+        <field name="domain">[('need_sync_m', '=', True)]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <!-- Action for stuck events -->
+    <record id="action_calendar_event_stuck" model="ir.actions.act_window">
+        <field name="name">Événements bloqués</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_calendar_event_need_sync_list"/>
+        <field name="domain">[('sync_analysis_state', '=', 'stuck')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <!-- Action for extreme future events -->
+    <record id="action_calendar_event_extreme_future" model="ir.actions.act_window">
+        <field name="name">Événements futur extrême</field>
+        <field name="res_model">calendar.event</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('sync_analysis_state', '=', 'extreme_future')]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <!-- Server action for analysis -->
+    <record id="action_server_analyze_need_sync" model="ir.actions.server">
+        <field name="name">Analyser need_sync_m</field>
+        <field name="model_id" ref="calendar.model_calendar_event"/>
+        <field name="binding_model_id" ref="calendar.model_calendar_event"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+action = records.action_analyze_need_sync()
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_calendar_event_need_sync"
+              name="Événements à synchroniser"
+              parent="menu_microsoft_sync_analyzer_root"
+              action="action_calendar_event_need_sync"
+              sequence="30"/>
+
+    <menuitem id="menu_calendar_event_stuck"
+              name="Événements bloqués"
+              parent="menu_microsoft_sync_analyzer_root"
+              action="action_calendar_event_stuck"
+              sequence="40"/>
+
+    <menuitem id="menu_calendar_event_extreme_future"
+              name="Futur extrême"
+              parent="menu_microsoft_sync_analyzer_root"
+              action="action_calendar_event_extreme_future"
+              sequence="50"/>
+</odoo>

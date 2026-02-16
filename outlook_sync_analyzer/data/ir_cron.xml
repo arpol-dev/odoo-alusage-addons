@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Cron pour sauvegarder les rapports automatiquement -->
+        <record id="ir_cron_save_sync_reports" model="ir.cron">
+            <field name="name">Outlook Sync: Sauvegarder les rapports</field>
+            <field name="model_id" ref="model_microsoft_sync_report"/>
+            <field name="state">code</field>
+            <field name="code">model.auto_save_reports()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="active" eval="False"/>
+        </record>
+    </data>
+</odoo>

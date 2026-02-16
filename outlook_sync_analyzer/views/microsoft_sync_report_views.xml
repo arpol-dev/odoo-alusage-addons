@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_microsoft_sync_report_form" model="ir.ui.view">
+        <field name="name">microsoft.sync.report.form</field>
+        <field name="model">microsoft.sync.report</field>
+        <field name="arch" type="xml">
+            <form string="Rapport de synchronisation">
+                <header>
+                    <button name="action_download_report" type="object"
+                            string="Télécharger rapport (.md)" class="btn-primary" icon="fa-download"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="user_id"/>
+                        <field name="log_id"/>
+                        <field name="attachment_id" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="HTML" name="html">
+                            <field name="content_html" nolabel="1" widget="html"/>
+                        </page>
+                        <page string="Markdown" name="markdown">
+                            <field name="content" nolabel="1" widget="text"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- List View -->
+    <record id="view_microsoft_sync_report_list" model="ir.ui.view">
+        <field name="name">microsoft.sync.report.list</field>
+        <field name="model">microsoft.sync.report</field>
+        <field name="arch" type="xml">
+            <list string="Rapports de synchronisation">
+                <field name="create_date"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="attachment_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_microsoft_sync_report" model="ir.actions.act_window">
+        <field name="name">Rapports de synchronisation</field>
+        <field name="res_model">microsoft.sync.report</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_microsoft_sync_report"
+              name="Rapports"
+              parent="menu_microsoft_sync_analyzer_root"
+              action="action_microsoft_sync_report"
+              sequence="20"/>
+</odoo>

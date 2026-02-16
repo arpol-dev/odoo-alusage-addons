@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_microsoft_sync_log_user,microsoft.sync.log user,model_microsoft_sync_log,base.group_user,1,1,1,0
+access_microsoft_sync_log_manager,microsoft.sync.log manager,model_microsoft_sync_log,base.group_system,1,1,1,1
+access_microsoft_sync_report_user,microsoft.sync.report user,model_microsoft_sync_report,base.group_user,1,0,0,0
+access_microsoft_sync_report_manager,microsoft.sync.report manager,model_microsoft_sync_report,base.group_system,1,1,1,1
+access_outlook_sync_analysis_wizard,outlook.sync.analysis.wizard,model_outlook_sync_analysis_wizard,base.group_user,1,1,1,1

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- List View -->
+    <record id="view_microsoft_sync_log_list" model="ir.ui.view">
+        <field name="name">microsoft.sync.log.list</field>
+        <field name="model">microsoft.sync.log</field>
+        <field name="arch" type="xml">
+            <list string="Logs de synchronisation" decoration-danger="status=='error'"
+                  decoration-warning="status=='timeout'" decoration-success="status=='success'">
+                <field name="create_date"/>
+                <field name="user_id"/>
+                <field name="operation"/>
+                <field name="status"/>
+                <field name="duration_ms"/>
+                <field name="events_count"/>
+                <field name="events_created"/>
+                <field name="events_updated"/>
+                <field name="events_deleted"/>
+                <field name="events_errors"/>
+                <field name="need_sync_count_before"/>
+                <field name="need_sync_count_after"/>
+                <field name="has_anomaly"/>
+                <field name="anomaly_type"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_microsoft_sync_log_form" model="ir.ui.view">
+        <field name="name">microsoft.sync.log.form</field>
+        <field name="model">microsoft.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Log de synchronisation">
+                <header>
+                    <field name="status" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="write_markdown_report" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                string="Générer rapport MD"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="operation"/>
+                            <field name="event_id"/>
+                            <field name="event_name"/>
+                            <field name="microsoft_event_id"/>
+                        </group>
+                        <group>
+                            <field name="create_date"/>
+                            <field name="duration_ms"/>
+                            <field name="full_sync"/>
+                            <field name="sync_token"/>
+                        </group>
+                    </group>
+                    <group string="Statistiques">
+                        <group>
+                            <field name="events_count"/>
+                            <field name="events_created"/>
+                            <field name="events_updated"/>
+                            <field name="events_deleted"/>
+                            <field name="events_errors"/>
+                        </group>
+                        <group>
+                            <field name="need_sync_count_before"/>
+                            <field name="need_sync_count_after"/>
+                            <label for="need_sync_count_after" string="Delta"/>
+                            <div>
+                                <span class="text-success" invisible="need_sync_count_after &gt;= need_sync_count_before">
+                                    <field name="need_sync_count_after" invisible="1"/>
+                                    ↓ <field name="need_sync_count_before" invisible="1"/>
+                                </span>
+                                <span class="text-danger" invisible="need_sync_count_after &lt; need_sync_count_before">
+                                    ↑ <field name="need_sync_count_before" invisible="1"/>
+                                </span>
+                            </div>
+                        </group>
+                    </group>
+                    <group string="Anomalie" invisible="not has_anomaly">
+                        <field name="has_anomaly" invisible="1"/>
+                        <field name="anomaly_type"/>
+                        <field name="anomaly_details" widget="text"/>
+                    </group>
+                    <group string="Erreur" invisible="not error_message">
+                        <field name="api_response_code"/>
+                        <field name="error_message" widget="text"/>
+                    </group>
+                    <group string="Détails">
+                        <field name="details" widget="text"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_microsoft_sync_log_search" model="ir.ui.view">
+        <field name="name">microsoft.sync.log.search</field>
+        <field name="model">microsoft.sync.log</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="operation"/>
+                <field name="event_name"/>
+                <filter name="error" string="Erreurs" domain="[('status', '=', 'error')]"/>
+                <filter name="timeout" string="Timeouts" domain="[('status', '=', 'timeout')]"/>
+                <filter name="anomaly" string="Anomalies" domain="[('has_anomaly', '=', True)]"/>
+                <separator/>
+                <filter name="today" string="Aujourd'hui"
+                        domain="[('create_date', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0)))]"/>
+                <filter name="this_week" string="Cette semaine"
+                        domain="[('create_date', '&gt;=', (context_today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_user" string="Utilisateur" context="{'group_by': 'user_id'}"/>
+                    <filter name="group_operation" string="Opération" context="{'group_by': 'operation'}"/>
+                    <filter name="group_status" string="Statut" context="{'group_by': 'status'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'create_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_microsoft_sync_log" model="ir.actions.act_window">
+        <field name="name">Logs de synchronisation</field>
+        <field name="res_model">microsoft.sync.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_this_week': 1}</field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_microsoft_sync_analyzer_root"
+              name="Sync Outlook"
+              parent="calendar.mail_menu_calendar"
+              sequence="10"/>
+
+    <menuitem id="menu_microsoft_sync_log"
+              name="Logs de synchronisation"
+              parent="menu_microsoft_sync_analyzer_root"
+              action="action_microsoft_sync_log"
+              sequence="10"/>
+</odoo>

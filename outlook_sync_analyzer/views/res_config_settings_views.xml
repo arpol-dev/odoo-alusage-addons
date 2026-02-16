@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_inherit" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.outlook.sync.analyzer</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="calendar.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Ajouter après le bloc calendar existant -->
+            <block name="calendar" position="after">
+                <block title="Outlook Sync Analyzer" name="outlook_sync_analyzer">
+                    <setting string="Activer le logging détaillé" help="Active le traçage détaillé de toutes les opérations de synchronisation">
+                        <field name="outlook_sync_enable_logging"/>
+                    </setting>
+                    <setting string="Générer des rapports automatiques" help="Génère automatiquement des rapports markdown et les stocke dans le filestore">
+                        <field name="outlook_sync_generate_reports"/>
+                    </setting>
+                </block>
+
+                <block title="Limites de synchronisation" name="sync_limits">
+                    <setting string="Plage de synchronisation" help="Nombre de jours dans le passé et le futur à synchroniser">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="microsoft_calendar_sync_range_days" class="col-lg-3 o_light_label"/>
+                                <field name="microsoft_calendar_sync_range_days"/> jours
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Borne inférieure" help="Limite les mises à jour d'événements anciens (évite le spam)">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="microsoft_calendar_sync_lower_bound_range" class="col-lg-3 o_light_label"/>
+                                <field name="microsoft_calendar_sync_lower_bound_range"/> jours
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Limite année future" help="Détecte les récurrences anormales au-delà de cette année">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="outlook_sync_future_year_limit" class="col-lg-3 o_light_label"/>
+                                <field name="outlook_sync_future_year_limit"/>
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Limite événements anciens" help="Alerte pour événements de plus de X jours synchronisés">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="outlook_sync_old_event_limit_days" class="col-lg-3 o_light_label"/>
+                                <field name="outlook_sync_old_event_limit_days"/> jours
+                            </div>
+                        </div>
+                    </setting>
+                    <setting string="Date première sync" help="Synchronise uniquement les événements créés après cette date">
+                        <div class="content-group mt16">
+                            <div class="row">
+                                <label for="microsoft_calendar_first_sync_date" class="col-lg-3 o_light_label"/>
+                                <field name="microsoft_calendar_first_sync_date"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+
+                <block title="Analyses et rapports" name="analysis">
+                    <setting string="Lancer une analyse">
+                        <div class="mt16">
+                            <button name="%(action_outlook_sync_analysis_wizard)d" type="action"
+                                    string="🔍 Lancer une analyse" class="btn-primary"/>
+                            <p class="text-muted">
+                                Assistant d'analyse avec plusieurs types d'analyses disponibles
+                            </p>
+                        </div>
+                    </setting>
+                    <setting string="Générer un rapport global">
+                        <div class="mt16">
+                            <button name="action_analyze_all_users" type="object"
+                                    string="Générer rapport global" class="btn-secondary"/>
+                            <p class="text-muted">
+                                Génère un rapport de synthèse pour tous les utilisateurs
+                            </p>
+                        </div>
+                    </setting>
+                </block>
+            </block>
+        </field>
+    </record>
+</odoo>
